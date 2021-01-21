@@ -18,9 +18,9 @@ class View(Tk):
         self.images = IMAGES
         self.title_label = Label(self, text=TITLE, background=BG_COLOR, font=LARGE_FONT)
         self.choose_label = Label(self, text='wybierz kategorię', background=BG_COLOR, font=MED_FONT)
-        self.category_list = Listbox(self, selectmode='single')
         self.category = StringVar(self)
         self.category.set(CATEGORIES[0])
+        self.category.trace("w", self.change_category)
 
         self.option_menu = OptionMenu(self, self.category, *CATEGORIES)
         self.option_menu.configure(background=BTN_COLOR, font=MED_FONT, borderwidth='1',
@@ -28,7 +28,7 @@ class View(Tk):
         menu = self.nametowidget(self.option_menu.menuname)
         menu.config(font=MED_FONT, background=BG_COLOR, activebackground=BTN_COLOR)
         self.start_button = Button(self, text='start', width=15, height=1,
-                                   command=lambda: self.build_interface(), background=BTN_COLOR,
+                                   command=lambda: self.controller.new_game(), background=BTN_COLOR,
                                    font=MED_FONT, activebackground=BTN_ACT_COLOR, relief=GROOVE)
         self.exit_button = Button(self, text='wyjście', width=15, height=1, command=lambda: self.quit_game(),
                                   background=BTN_COLOR, font=MED_FONT, activebackground=BTN_ACT_COLOR, relief=GROOVE)
@@ -36,8 +36,10 @@ class View(Tk):
         self.hangman_label = Label(self)
         self.word_label = Label(self, textvariable=self.label_word, font=WORD_LBL_FONT,
                                 background=BG_COLOR)
+        self.category_label = Label(self, textvariable=self.category, font=MED_FONT,
+                                    background=BG_COLOR)
         self.new_game_btn = Button(self, text='nowa gra', width=15, height=1,
-                                   command=lambda: self.controller.new_game(), background=BTN_COLOR, font=MED_FONT,
+                                   command=lambda: self.controller.build_menu(), background=BTN_COLOR, font=MED_FONT,
                                    activebackground=BTN_ACT_COLOR, relief=GROOVE)
         self.points_label = Label(self, text='punkty', background=BG_COLOR, font=SMALL_FONT)
         self.points_counter = Label(self, textvariable=self.score, background=BG_COLOR,
@@ -56,7 +58,6 @@ class View(Tk):
         self.option_menu.place(relx=.5, rely=.5, anchor="c")
         self.start_button.place(relx=.5, rely=.6, anchor="c")
         self.exit_button.place(relx=.5, rely=.72, anchor="c", )
-        self.category.trace("w", self.change_category)
 
     def build_interface(self):
         self.clear_place()
@@ -67,15 +68,16 @@ class View(Tk):
         for num, letter in enumerate(LETTERS):
             Button(self, text=letter, width=7, height=1, background=KEY_BG_COLOR, activebackground=KEY_BG_ACT_COLOR,
                    command=lambda row=num: self.controller.model.guess_letter(LETTERS[row]), relief=GROOVE,
-                   font=WORD_LBL_FONT).grid(row=5 + num // 11, column=num % 11, sticky=N + S + E + W)
+                   font=WORD_LBL_FONT).grid(row=6 + num // 11, column=num % 11, sticky=N + S + E + W)
         self.hangman_label.grid(row=0, column=0, columnspan=5, rowspan=5, sticky=N + W, padx=5, pady=5)
         self.hangman_label.config(image=self.images[0], border=10, background=BTN_ACT_COLOR)
         self.title_label.grid(row=0, column=5, columnspan=5)
         self.word_label.grid(row=4, column=0, columnspan=5, sticky=W)
-        self.new_game_btn.grid(row=1, column=5, columnspan=5, padx=5, pady=5)
-        self.exit_button.grid(row=2, column=5, columnspan=5, padx=5, pady=5)
-        self.points_counter.grid(row=3, column=5, columnspan=5, sticky=S)
-        self.points_label.grid(row=4, column=5, columnspan=5, sticky=N)
+        self.category_label.grid(row=1, column=5, columnspan=5, padx=5, pady=5)
+        self.new_game_btn.grid(row=2, column=5, columnspan=5, padx=5, pady=5)
+        self.exit_button.grid(row=3, column=5, columnspan=5, padx=5, pady=5)
+        self.points_counter.grid(row=4, column=5, columnspan=5, sticky=S)
+        self.points_label.grid(row=5, column=5, columnspan=5, sticky=N)
 
     def clear_place(self):
         self.title_label.place_forget()
@@ -91,6 +93,7 @@ class View(Tk):
         self.hangman_label.grid_forget()
         self.title_label.grid_forget()
         self.word_label.grid_forget()
+        self.category_label.grid_forget()
         self.new_game_btn.grid_forget()
         self.exit_button.grid_forget()
         self.points_label.grid_forget()
@@ -99,8 +102,7 @@ class View(Tk):
         for item in items:
             item.destroy()
 
-    def change_category(self):
-        print(self.category.get())
+    def change_category(self, *params):
         return self.category.get()
 
     def quit_game(self):

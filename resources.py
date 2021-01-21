@@ -6,9 +6,9 @@ IMAGES = ['images/hangman_0.png', 'images/hangman_1.png', 'images/hangman_2.png'
           'images/hangman_6.png', 'images/hangman_7.png', 'images/hangman_8.png', 'images/hangman_9.png',
           'images/hangman_10.png']
 
-CATEGORIES = ['państwa', 'miasta', 'zwierzęta', 'rośliny']
+CATEGORIES = ['panstwa', 'miasta', 'zwierzeta', 'rosliny']
 
-RESOLUTION = '1280x720'
+RESOLUTION = '1280x700'
 TITLE = 'hangman'
 
 # COLORS
